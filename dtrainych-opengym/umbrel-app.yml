@@ -4,7 +4,7 @@ storage:
   dataRoot: data
 category: files
 name: openGym
-version: "1.4.1"
+version: "1.4.1-patch.1"
 tagline: Plan workouts and track your progress
 description: >-
   Open openGym using your Umbrel hostname over HTTPS to create a profile with a
@@ -18,7 +18,9 @@ description: >-
   review your progress with charts and personal records. Import workouts from
   other trackers, attach photos and videos, and sync your data across devices.
   Your profiles, workouts, uploads, and session keys stay on your Umbrel.
-releaseNotes: ""
+releaseNotes: >-
+  Open openGym directly without a separate Umbrel login. Your existing openGym
+  profile and data are unchanged; HTTPS is still required for passkeys.
 developer: Duarte Santos
 website: https://opengym.ch/
 dependencies: []
