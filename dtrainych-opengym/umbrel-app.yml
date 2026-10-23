@@ -4,7 +4,7 @@ storage:
   dataRoot: data
 category: files
 name: openGym
-version: "1.4.2"
+version: "1.4.2-patch1"
 tagline: Plan workouts and track your progress
 description: >-
   Open openGym using your Umbrel hostname over HTTPS to create a profile with a
