@@ -7,7 +7,7 @@ Umbrel app. It uses the unmodified MCP tools and training calculations from
 ## Activate after pushing
 
 1. Push the package changes to your community App Store repository.
-2. Refresh the store in Umbrel and update **openGym** to `1.4.2-patch.2`.
+2. Refresh the store in Umbrel and update **openGym** to `1.4.2-patch.3`.
 3. Copy the password from openGym's **Umbrel app credentials**. The username label
    is **MCP bearer token**. This credential belongs to MCP; your existing profile
    password and passkeys continue to work as before.
@@ -96,6 +96,8 @@ Local checks completed using Node 22.23.4 on Linux amd64:
 
 - 95 upstream MCP tests passed.
 - The minimal extracted source's complete MCP import graph loads under Node.
+- Exact embedded compose startup and cached restart passed using a clean
+  temporary runtime and synthetic data (test-startup.py).
 - SDK client integration passed initialization, discovery of nine read-only
   tools, and `list_routines` against synthetic profile data.
 - Missing and incorrect bearer tokens and browser Origin requests were rejected.
@@ -115,3 +117,9 @@ OPENGYM_MCP_URL=http://umbrel.local:3487/mcp MCP_TOKEN='<token>' node smoke.mjs
 ```
 
 It reports only success and tool count, without printing profile data or tokens.
+
+To repeat the embedded startup regression test with Node 22 on PATH:
+
+```sh
+python3 dtrainych-opengym/mcp-http/test-startup.py
+```

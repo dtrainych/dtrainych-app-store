@@ -9,7 +9,7 @@ environment:
     note: Optional profile ID for MCP. Leave empty for a single profile; required when multiple profiles exist.
 category: files
 name: openGym
-version: "1.4.2-patch.2"
+version: "1.4.2-patch.3"
 tagline: Plan workouts and track your progress
 description: >-
   Open openGym using your Umbrel hostname over HTTPS to create a profile with a
@@ -30,6 +30,7 @@ description: >-
   and does not replace your openGym profile password. HTTP is unencrypted; use
   this endpoint on your trusted local network and do not forward its port.
 releaseNotes: >-
+  Fixes MCP startup when loading the embedded HTTP bridge.
   Adds a read-only MCP endpoint over HTTP on port 3487 for local-network AI
   clients. Use /mcp and the MCP bearer token shown in Umbrel's app credentials.
   The bridge reads the same profile data as openGym, including custom storage

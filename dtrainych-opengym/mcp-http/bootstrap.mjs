@@ -1,13 +1,14 @@
 // Run in the pinned Node image. First launch fetches only the pinned upstream source
 // and locked runtime dependencies. Restarts reuse the container's working directory.
 import { createHash } from 'node:crypto';
+import { pathToFileURL } from 'node:url';
 import { createReadStream, createWriteStream } from 'node:fs';
 import { mkdir, access, writeFile, unlink } from 'node:fs/promises';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import { execFileSync } from 'node:child_process';
 const commit = 'e9a303877d02e4237b183f96a9a6603990e8fafb';
-const root = '/tmp/opengym';
+const root = process.env.MCP_RUNTIME_DIR || '/tmp/opengym';
 await mkdir(root, { recursive: true });
 process.chdir(root);
 try { await access('.mcp-ready'); }
@@ -24,4 +25,4 @@ catch {
   await writeFile('.mcp-ready', commit);
 }
 await writeFile('mcp/http.mjs', Buffer.from(process.env.MCP_ADAPTER_BASE64, 'base64'));
-await import(`${root}/mcp/http.mjs`);
+await import(pathToFileURL(`${root}/mcp/http.mjs`).href);
