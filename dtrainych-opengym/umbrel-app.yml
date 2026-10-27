@@ -2,9 +2,14 @@ manifestVersion: 2.0
 id: dtrainych-opengym
 storage:
   dataRoot: data
+environment:
+  - name: OPENGYM_UID
+    services:
+      - mcp
+    note: Optional profile ID for MCP. Leave empty for a single profile; required when multiple profiles exist.
 category: files
 name: openGym
-version: "1.4.2-patch1"
+version: "1.4.2-patch.2"
 tagline: Plan workouts and track your progress
 description: >-
   Open openGym using your Umbrel hostname over HTTPS to create a profile with a
@@ -18,9 +23,18 @@ description: >-
   review your progress with charts and personal records. Import workouts from
   other trackers, attach photos and videos, and sync your data across devices.
   Your profiles, workouts, uploads, and session keys stay on your Umbrel.
+
+
+  Local-network MCP clients can read your training data at http://umbrel.local:3487/mcp.
+  Use the password in Umbrel's app credentials as a bearer token; it is for MCP
+  and does not replace your openGym profile password. HTTP is unencrypted; use
+  this endpoint on your trusted local network and do not forward its port.
 releaseNotes: >-
-  Open openGym directly without a separate Umbrel login. Your existing openGym
-  profile and data are unchanged; HTTPS is still required for passkeys.
+  Adds a read-only MCP endpoint over HTTP on port 3487 for local-network AI
+  clients. Use /mcp and the MCP bearer token shown in Umbrel's app credentials.
+  The bridge reads the same profile data as openGym, including custom storage
+  mounts. Select OPENGYM_UID in app settings if you have multiple profiles.
+  Initial startup downloads the pinned MCP source and dependencies.
 developer: Duarte Santos
 website: https://opengym.ch/
 dependencies: []
@@ -31,7 +45,8 @@ requiresHttps: true
 icon: https://opengym.ch/icon-512.png
 gallery: []
 path: ""
-defaultUsername: ""
+defaultUsername: "MCP bearer token"
+deterministicPassword: true
 defaultPassword: ""
 submitter: dtrainych
 submission: https://github.com/dtrainych/dtrainych-app-store
