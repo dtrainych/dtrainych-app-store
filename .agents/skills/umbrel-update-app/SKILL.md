@@ -11,6 +11,8 @@ This skill contains the normal update workflow. Consult `umbrel-package-app` onl
 
 Keep changes scoped to the requested app unless the task explicitly requires shared changes.
 
+For `dtrainych-opengym`, read [the OpenGym app and MCP reference](references/opengym.md) before changing images or MCP source. It supplements this workflow with generated-compose, data-mount, authentication, startup-test, and tunnel requirements.
+
 ## What Umbrel Sees
 
 - Umbrel shows an available app update when the app-store manifest `version` for an installed `id` differs from the installed app's `version`.

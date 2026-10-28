@@ -37,7 +37,9 @@ The endpoint serves MCP POST requests. It supports clients running on the LAN;
 a hosted client requires its own network connectivity to that LAN.
 
 HTTP sends the token and results unencrypted. Keep this port on your trusted LAN;
-do not port-forward it or publish it through a tunnel. The service publishes port
+do not port-forward it or publish it through a public tunnel. The configured
+OpenAI Secure MCP Tunnel uses an authenticated outbound connection and is supported.
+The service publishes port
 3487 on the device's interfaces, accepts the device hostname and literal private
 IPv4 addresses, rejects browser Origin headers, and requires the token for every
 request. Additional DNS aliases must be explicitly added to MCP_ALLOWED_HOSTS.
@@ -105,8 +107,9 @@ Local checks completed using Node 22.23.4 on Linux amd64:
   were checked.
 
 Live Umbrel update/restart/storage verification is pending the push and app
-update. The repo has no `package.json` or `lint:apps` script, so the skills'
-standard `npm run lint:apps` check is unavailable here. No live HTTP endpoint is
+update. The repo now includes the standard Umbrel linter copied from `umbrel-apps`.
+Install its locked dependency with `npm ci --ignore-scripts`, then run
+`npm run lint:apps -- dtrainych-opengym --check-images`. No live HTTP endpoint is
 claimed yet. The temporary failed Portainer bridge stack was removed.
 
 `smoke.mjs` uses the MCP SDK installed in upstream's `mcp` directory. To check a
