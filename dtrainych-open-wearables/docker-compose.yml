@@ -28,6 +28,7 @@ services:
     environment:
       APP_HOST: dtrainych-open-wearables_frontend_1
       APP_PORT: 3000
+      PROXY_AUTH_ADD: "false"
 
   db:
     image: postgres:18.3-bookworm@sha256:80630f83606d8db77d30b3851b16a9f78be2d0d4dda6f7b82a1fdca5ebe3acba

@@ -16,7 +16,7 @@ Static/package/image checks passed. The pinned image indexes publish
 `linux/amd64` and `linux/arm64`; the isolated MCP integration tests passed on
 Linux amd64/Python 3.14.4 with uv 0.11.1.
 
-### Umbrel runtime verification — 2026-10-28
+### Umbrel runtime verification — 0.10.0, 2026-10-28
 
 Fresh installation was tested through Umbrel's app lifecycle on a physical
 amd64 device running umbrelOS 2.0.0. The unpublished package was temporarily
@@ -59,3 +59,22 @@ Actual provider OAuth/live sync, external S3 imports, arm64 runtime behavior,
 and migration of the existing Portainer data remain untested. This was a fresh
 installation, not an upgrade-path or data-migration test. The running Portainer
 deployment was not changed.
+
+### Follow-up: browser session collision
+
+After installation alongside the existing Portainer instance, an ordinary browser
+session produced a portal 500 while the backend remained healthy. Read-only logs
+showed 401 responses to dashboard/user requests. The owner confirmed that a private
+window opened the Open Wearables login page normally. Upstream's fixed `ow_session`
+cookie name and frontend session handling explain the conflict between instances
+on different ports of the same hostname. The isolated browser contexts used above
+did not cover this coexistence case. See the package README for workarounds.
+
+### Package update — 0.10.0-patch.1
+
+The default outer Umbrel login is now disabled through `PROXY_AUTH_ADD: "false"`.
+Open Wearables' own login remains enabled. This matches the authentication mode
+used for the successful HTTPS UI, API-key and persistence checks above. The
+installed-app update path has not been rerun for this patch. Disabling outer
+Umbrel login does not resolve the separate session-cookie collision described
+above.

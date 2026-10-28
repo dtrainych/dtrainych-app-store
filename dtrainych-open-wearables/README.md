@@ -10,15 +10,30 @@ This package pins release **0.10.0**, commit
 Install from the dtrainych community store after this package is published there.
 Open it through Umbrel over HTTPS. Sign in as `admin@admin.com` with the initial
 password in Umbrel's app credentials, then change the password in the portal.
+The portal uses Open Wearables' own login; Umbrel's additional login is disabled.
 Umbrel generates this 64-character hexadecimal bootstrap password. Copy it for
 the first login, then choose your own password in the portal. The displayed
 Umbrel credential remains the bootstrap value after you change it.
 The initial password is only seeded into an empty database; it does not reset
 an existing account on restart or after a database restore.
 
+### Existing browser sessions
+
+If the portal shows a 500 error after installing alongside another Open Wearables
+instance, try a private browser window. Upstream 0.10.0 uses a fixed `ow_session`
+cookie name. Browser cookies are shared across ports on the same hostname, so a
+session from the Portainer instance can reach this separate backend. That backend
+rejects the token with 401, which the frontend can surface as a 500.
+
+Use separate browser profiles/private windows while running both instances, or
+serve them on distinct hostnames. Clearing cookies for the shared hostname also
+clears the stale session, but signs you out of other apps on that hostname and
+does not prevent another collision. This does not require reinstalling the app
+or resetting its database.
+
 | Service | Address | Authentication |
 | --- | --- | --- |
-| Portal | `https://umbrel.local:3490` | Umbrel login, then Open Wearables login |
+| Portal | `https://umbrel.local:3490` | Open Wearables login |
 | REST API | `http://umbrel.local:3491` | Open Wearables API keys / application tokens |
 | MCP | `http://umbrel.local:3492/mcp` | Bearer token containing an Open Wearables API key |
 
