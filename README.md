@@ -8,9 +8,13 @@ Community Umbrel App Store for umbrelOS 2.0 or newer.
 | --- | --- | --- |
 | openGym | `dtrainych-opengym` | Workout planning, tracking and read-only MCP access |
 | Open Wearables | `dtrainych-open-wearables` | Wearable health data, provider integrations and hosted MCP access |
+| Immich Power Tools | `dtrainych-immich-power-tools` | Manage the existing Umbrel Immich library over the shared Docker network |
 
 See the [Open Wearables package guide](dtrainych-open-wearables/README.md) for
 setup, API/MCP connections, migration instructions and test evidence.
+
+See the [Immich Power Tools package guide](dtrainych-immich-power-tools/README.md)
+for Immich requirements, sign-in, persistence and Portainer migration.
 
 ## Add the store
 

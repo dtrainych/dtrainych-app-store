@@ -1,0 +1,25 @@
+version: "3.7"
+
+services:
+  app_proxy:
+    environment:
+      APP_HOST: dtrainych-immich-power-tools_web_1
+      APP_PORT: 3000
+
+  web:
+    image: ghcr.io/immich-power-tools/immich-power-tools:0.25.0@sha256:85af8a9f116cfb626dcda491a49616baf90108fe428a885df5ab68bd7cddb291
+    user: "1000:1000"
+    restart: on-failure
+    environment:
+      IMMICH_URL: http://immich_server_1:2283
+      EXTERNAL_IMMICH_URL: http://${DEVICE_DOMAIN_NAME}:2283
+      DB_HOST: immich_postgres_1
+      DB_PORT: "5432"
+      DB_USERNAME: ${APP_DTRAINYCH_IMMICH_POWER_TOOLS_DB_USERNAME:?Immich database username is unavailable}
+      DB_PASSWORD: ${APP_DTRAINYCH_IMMICH_POWER_TOOLS_DB_PASSWORD:?Immich database password is unavailable}
+      DB_DATABASE_NAME: ${APP_DTRAINYCH_IMMICH_POWER_TOOLS_DB_DATABASE_NAME:?Immich database name is unavailable}
+      JWT_SECRET: ${APP_DTRAINYCH_IMMICH_POWER_TOOLS_JWT_SECRET}
+      APP_DB_PATH: /app/data/app.db
+    volumes:
+      - ${APP_DATA_DIR}/data/power-tools:/app/data
+    # Umbrel attaches this service to umbrel_main_network, shared with Immich.

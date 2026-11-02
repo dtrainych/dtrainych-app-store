@@ -1,0 +1,39 @@
+manifestVersion: 2.0
+id: dtrainych-immich-power-tools
+storage:
+  dataRoot: data
+environment:
+  - name: EXTERNAL_IMMICH_URL
+    services:
+      - web
+    note: Browser-facing Immich URL. Defaults to your Umbrel hostname on port 2283; set your public photos URL here if needed.
+category: media
+name: Immich Power Tools
+version: "0.25.0"
+tagline: Organize your Immich people, albums and library
+description: >-
+  Requires the Immich app on this Umbrel, running Immich 3.0 or newer.
+  Open Power Tools and sign in with your Immich email and password.
+  Your existing Immich library and database are used directly. Back up
+  Immich before using bulk editing or deletion tools.
+
+
+  Manage people and albums, find potential albums, repair missing locations,
+  adjust dates, and explore library statistics. Power Tools connects to
+  Immich over Umbrel's shared Docker network, without exposing its database
+  to your local network. Power Tools settings and workflows stay on your Umbrel.
+releaseNotes: ""
+developer: Varun Raj and contributors
+website: https://github.com/immich-power-tools/immich-power-tools
+dependencies:
+  - immich
+repo: https://github.com/immich-power-tools/immich-power-tools
+support: https://github.com/immich-power-tools/immich-power-tools/issues
+port: 2284
+icon: https://raw.githubusercontent.com/immich-power-tools/immich-power-tools/v0.25.0/public/android-chrome-512x512.png
+gallery: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""
+submitter: dtrainych
+submission: https://github.com/dtrainych/dtrainych-app-store
