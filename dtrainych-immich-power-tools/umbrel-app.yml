@@ -9,7 +9,7 @@ environment:
     note: Browser-facing Immich URL. Defaults to your Umbrel hostname on port 2283; set your public photos URL here if needed.
 category: media
 name: Immich Power Tools
-version: "0.25.0"
+version: "0.25.0-patch.1"
 tagline: Organize your Immich people, albums and library
 description: >-
   Requires the Immich app on this Umbrel, running Immich 3.0 or newer.
@@ -22,7 +22,9 @@ description: >-
   adjust dates, and explore library statistics. Power Tools connects to
   Immich over Umbrel's shared Docker network, without exposing its database
   to your local network. Power Tools settings and workflows stay on your Umbrel.
-releaseNotes: ""
+releaseNotes: >-
+  Fixes installation on Umbrel versions whose bundled yq does not support
+  the newer -r shorthand.
 developer: Varun Raj and contributors
 website: https://github.com/immich-power-tools/immich-power-tools
 dependencies:

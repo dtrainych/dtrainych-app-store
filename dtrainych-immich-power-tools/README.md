@@ -29,7 +29,8 @@ Docker socket mount, or second Immich/database installation.
 The official Immich package currently exports no database connection variables.
 At app startup, `exports.sh` reads `POSTGRES_USER`, `POSTGRES_PASSWORD`, and
 `POSTGRES_DB` from the installed Immich Compose file using Umbrel's bundled
-`yq`, including YAML aliases. It reads the package configuration only and does
+`yq`, including YAML aliases. The package uses the older-compatible
+`--unwrapScalar` option rather than the newer `-r` shorthand. It reads the package configuration only and does
 not change Immich. Credentials remain runtime values, never checked into Git.
 Missing, empty, or interpolated values stop startup with a field-specific error
 that does not print credentials. Custom dependency providers, renamed services,
@@ -83,3 +84,12 @@ unresolved variable expressions. Shell syntax and whitespace checks passed.
 Umbrel installation, browser login, database/API connectivity, restart, and
 persistence still need device verification. Package preparation does not
 deploy the app or change the existing Portainer stack.
+
+## Install failure fixed in 0.25.0-patch.1
+
+Umbrel logs identified `Error: unknown shorthand flag: 'r' in -r` during
+credential loading. The initial check used a newer yq than the device. This
+patch uses `--exit-status --unwrapScalar`, both supported by the device's
+bundled yq. Refresh the community store after publishing this patch and retry
+the installation. Existing successful installs can use the normal app update.
+The upstream image and stored data paths are unchanged.

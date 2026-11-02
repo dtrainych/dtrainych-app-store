@@ -5,7 +5,7 @@ _dtrainych_immich_compose="${UMBREL_ROOT}/app-data/immich/docker-compose.yml"
 
 _dtrainych_immich_db_value() {
   local value
-  value="$(yq e -e -r ".services.postgres.environment.${1}" "${_dtrainych_immich_compose}")" || {
+  value="$(yq e --exit-status --unwrapScalar ".services.postgres.environment.${1}" "${_dtrainych_immich_compose}")" || {
     printf '%s\n' "Immich Power Tools: cannot read Immich's ${1}; check the installed Immich package." >&2
     return 1
   }
