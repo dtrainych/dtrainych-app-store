@@ -1,21 +1,22 @@
 # openGym MCP over HTTP
 
 This package adds a read-only Streamable HTTP MCP service alongside the existing
-Umbrel app. It uses the unmodified MCP tools and training calculations from
-[openGym v1.4.2](https://github.com/DuarteSantos8/openGym/tree/v1.4.2/mcp).
+Umbrel app. It uses the unmodified read tools and training calculations from
+[openGym v1.4.4](https://github.com/DuarteSantos8/openGym/tree/v1.4.4/mcp).
+The HTTP adapter registers only upstream `TOOLS`, including `get_programme`;
+upstream `WRITE_TOOLS` and workout-writing credentials are not exposed.
 
 ## Activate after pushing
 
 1. Push the package changes to your community App Store repository.
-2. Refresh the store in Umbrel and update **openGym** to `1.4.2-patch.3`.
+2. Refresh the store in Umbrel and update **openGym** to `1.4.4`.
 3. Copy the password from openGym's **Umbrel app credentials**. The username label
    is **MCP bearer token**. This credential belongs to MCP; your existing profile
    password and passkeys continue to work as before.
 4. Configure your MCP client with **Streamable HTTP**, URL
    `http://umbrel.local:3487/mcp`, and the header
    `Authorization: Bearer <copied password>`.
-   On your current network, `http://192.168.1.188:3487/mcp` also works.
-5. Ask the client to list your routines or recent workouts.
+ 5. Ask the client to list your routines or recent workouts.
 
 For clients supporting URL/header configuration, the common configuration shape
 is:
@@ -74,7 +75,7 @@ sources, and installs dependencies with the upstream lockfile using
 
 GitHub and npm access are needed whenever Umbrel recreates the sidecar, including
 app lifecycle operations that recreate containers. The upstream archive is about
-194 MB; unused media is not extracted and the archive is deleted after extraction.
+196 MB; unused media is not extracted and the archive is deleted after extraction.
 A normal process restart in the same container reuses the installed code.
 A download failure affects MCP; the existing web and API services remain separate.
 This bootstrap is a practical custom-store deployment; a prebuilt MCP image would
@@ -94,23 +95,36 @@ No generated token or user data is stored in this repository.
 
 ## Verification
 
-Local checks completed using Node 22.23.4 on Linux amd64:
+Checks for the 1.4.2-patch.3 → 1.4.4 package update completed using Node
+22.23.4 on Linux arm64:
 
-- 95 upstream MCP tests passed.
-- The minimal extracted source's complete MCP import graph loads under Node.
+- 133 upstream MCP tests passed; five API-backed write integration tests were
+  skipped because the separate upstream API test dependencies were not installed.
+- The complete MCP import graph loads under plain Node.
 - Exact embedded compose startup and cached restart passed using a clean
-  temporary runtime and synthetic data (test-startup.py).
-- SDK client integration passed initialization, discovery of nine read-only
+  temporary runtime and synthetic data (`test-startup.py`).
+- SDK client integration passed initialization, discovery of ten read-only
   tools, and `list_routines` against synthetic profile data.
-- Missing and incorrect bearer tokens and browser Origin requests were rejected.
-- Manifest/compose consistency, pinned image platforms, and `git diff --check`
-  were checked.
+- Missing and incorrect bearer tokens, untrusted Host headers, and browser
+  Origin requests were rejected.
+- Rendering is deterministic and both embedded scripts match their source files.
+- Public API/web image indexes support linux/amd64 and linux/arm64; both
+  architectures' image labels identify version 1.4.4 and source commit
+  `5f5832db56080837b58342ff50f78631dcc63e07`.
+- `npm run lint:apps -- dtrainych-opengym --check-images` passed with zero errors
+  and two warnings: the unchanged pinned Node image's tag has been rebuilt, and
+  the MCP sidecar deliberately uses `no-new-privileges:true`. The existing Node
+  digest remains pinned; all Linux capabilities remain dropped.
+- `git diff --check` passed.
 
-Live Umbrel update/restart/storage verification is pending the push and app
-update. The repo now includes the standard Umbrel linter copied from `umbrel-apps`.
-Install its locked dependency with `npm ci --ignore-scripts`, then run
-`npm run lint:apps -- dtrainych-opengym --check-images`. No live HTTP endpoint is
-claimed yet. The temporary failed Portainer bridge stack was removed.
+Live Umbrel update, browser login, restart, and real-data persistence verification
+were not performed for this release. These local checks do not establish the
+Umbrel update path. The API still runs as root with `/data` persistence; upstream's
+web image now runs as UID 101 and retains port 80 as its Docker default. No
+package mount, authentication, permission, or environment change was required.
+
+Install the repository's locked lint dependency with `npm ci --ignore-scripts`
+before repeating the linter.
 
 `smoke.mjs` uses the MCP SDK installed in upstream's `mcp` directory. To check a
 running endpoint, copy it beside upstream's `mcp/package.json`, then run:

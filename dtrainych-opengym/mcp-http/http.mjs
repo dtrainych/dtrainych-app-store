@@ -1,4 +1,4 @@
-// HTTP adapter for the unmodified read-only openGym v1.4.2 tools.
+// HTTP adapter for the unmodified read-only openGym v1.4.4 tools.
 // Copied beside upstream mcp/package.json by the deployment bootstrap.
 import http from 'node:http';
 import { isIP } from 'node:net';
