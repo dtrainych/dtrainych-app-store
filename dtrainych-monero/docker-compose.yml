@@ -7,7 +7,7 @@ services:
       APP_PORT: 9976
 
   server:
-    image: ghcr.io/voltagebushels82/umbrel-monero:v1.1.2@sha256:71b03c8ba8155971f01a227e1c3943874682a127fc014d77a10a0ce00bfbe26a
+    image: ghcr.io/voltagebushels82/umbrel-monero:v1.1.3
     depends_on: [monerod, tor, i2pd_daemon]
     restart: on-failure
     expose:
