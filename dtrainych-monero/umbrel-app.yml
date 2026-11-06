@@ -4,22 +4,28 @@ storage:
   dataRoot: data
 category: crypto
 name: Monero Node
-version: "1.1.2-patch.1"
-tagline: Run your own Monero node
+version: "0.18.5.4-patch.1"
+tagline: Run a monero node
 description: >-
-  Run a Monero node and independently verify the blockchain. Initial sync requires substantial storage and time. Manage your node and configure Tor and I2P from the dashboard.
-releaseNotes: >-
-  Fixes dashboard startup when its log directory is not writable.
-
+  Run your monero node and independently store and validate every single Monero transaction with it.
+  This is a full node that will download the entire Monero blockchain and store it on your Umbrel.
+  This is the most secure way to run a Monero node, but it will take a long time to sync and will require a lot of storage space.
 developer: deverickapollo
 website: https://www.getmonero.org/
 dependencies: []
-repo: https://github.com/voltagebushels82/umbrel-monero
-support: https://github.com/voltagebushels82/umbrel-monero/issues
+repo: https://github.com/deverickapollo/umbrel-monero
+support: https://github.com/deverickapollo/umbrel-monero/issues
 port: 9976
-gallery: []
-path: ""
-defaultUsername: ""
-defaultPassword: ""
 submitter: dtrainych
 submission: https://github.com/dtrainych/dtrainych-app-store
+gallery: []
+path: ""
+defaultPassword: ""
+releaseNotes: >-
+  This is the v0.18.5.4 release of the Monero software. This is a minor release that includes bug fixes.
+
+  Some highlights of this minor release are:
+    - Daemon: fix DNSSEC validation for checkpoints, blocklists and update checks
+    - RPC: restore string-to-integer conversion in JSON requests (to be removed in v0.19 as a breaking change)
+
+  Full release notes can be found at https://www.getmonero.org/2026/10/16/monero-0.18.5.4-released.html

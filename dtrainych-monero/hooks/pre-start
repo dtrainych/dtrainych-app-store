@@ -1,7 +1,31 @@
 #!/usr/bin/env bash
-set -euo pipefail
-APP_DIR="${APP_DATA_DIR:-$(readlink -f "$(dirname "${BASH_SOURCE[0]}")/..")}"
-DATA_DIR="${APP_DATA_ROOT:-${APP_DIR}/data}"
-mkdir -p "${DATA_DIR}"/{app/logs,monero,tor,i2pd}
-chown 1000:1000 "${DATA_DIR}"/{app,app/logs,monero,tor,i2pd}
-chmod 700 "${DATA_DIR}/tor"
+
+# Ensure bind mounts exist on upgrades as well as fresh installs.
+DATA_DIR="${APP_DATA_ROOT:-${APP_DATA_DIR}/data}"
+mkdir -p "${DATA_DIR}/app" "${DATA_DIR}/monero" "${DATA_DIR}/i2pd"
+chown 1000:1000 "${DATA_DIR}/app" "${DATA_DIR}/monero" "${DATA_DIR}/i2pd"
+
+# Delay booting Monero until the RPC and P2P Tor Hidden Services are ready
+
+HIDDEN_SERVICE_FILE="${TOR_DATA_DIR}/app-${APP_ID}-rpc/hostname"
+
+if [[ -f "${HIDDEN_SERVICE_FILE}" ]]; then
+	exit
+fi
+
+"${UMBREL_ROOT}/scripts/app" compose "${APP_ID}" up --detach monerod
+"${UMBREL_ROOT}/scripts/app" compose "${APP_ID}" up --detach tor
+
+echo "App: ${APP_ID} - Generating Tor Hidden Service..."
+
+for attempt in $(seq 1 100); do
+	if [[ -f "${HIDDEN_SERVICE_FILE}" ]]; then
+		echo "App: ${APP_ID} - Hidden service file created successfully!"
+		break
+	fi
+	sleep 0.1
+done
+
+if [[ ! -f "${HIDDEN_SERVICE_FILE}" ]]; then
+	echo "App: ${APP_ID} - Hidden service file wasn't created"
+fi

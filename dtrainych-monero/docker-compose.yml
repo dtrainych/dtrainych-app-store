@@ -1,3 +1,5 @@
+version: "3.7"
+
 services:
   app_proxy:
     environment:
@@ -5,77 +7,73 @@ services:
       APP_PORT: 9976
 
   server:
-    image: ghcr.io/voltagebushels82/umbrel-monero:v1.1.2@sha256:71b03c8ba8155971f01a227e1c3943874682a127fc014d77a10a0ce00bfbe26a
-    user: "1000:1000"
+    image: deverickapollo/umbrel-monero:v1.0.8@sha256:4cfb0a9b852175b73c9c3cb37771eb28c20fd21140bb85a98726dd6d09ee03f9
+    depends_on: [monerod]
     restart: on-failure
-    depends_on: [tor, i2pd_daemon]
+    expose:
+      - "9976"
     volumes:
-      - ${APP_DATA_DIR}/data/app:/data
-      - ${APP_DATA_DIR}/data/app/logs:/app/logs
-      - ${APP_DATA_DIR}/data/monero:/monero/.monero
-      - ${APP_DATA_DIR}/data/tor:/tor-data:ro
-      - ${APP_DATA_DIR}/data/i2pd:/i2pd-data:ro
+      - ${APP_DATA_DIR}/data/app:/data # volume to persist advanced settings json
+      - ${APP_MONERO_DATA_DIR}:/monero/.monero # volume to persist bitmonero.conf
     environment:
       PORT: "9976"
-      MONERO_HOST: "10.21.21.179"
-      MONERO_RPC_PORT: "18081"
+      MONERO_HOST: "${APP_MONERO_NODE_IP}"
+      MONERO_P2P_PORT: "${APP_MONERO_P2P_PORT}"
+      MONERO_RPC_PORT: "${APP_MONERO_RPC_PORT}"
+      MONERO_RESTRICTED_RPC_PORT: "${APP_MONERO_RESTRICTED_RPC_PORT}"
+      MONERO_DEFAULT_NETWORK: "${MONERO_DEFAULT_NETWORK}"
       MONERO_RPC_USER: "${APP_MONERO_RPC_USER}"
       MONERO_RPC_PASSWORD: "${APP_MONERO_RPC_PASS}"
-      MONERO_TOR: "true"
-      MONERO_I2P: "true"
-      TOR_PROXY_IP: "10.21.21.180"
-      TOR_PROXY_PORT: "9050"
-      I2P_DAEMON_IP: "10.21.21.181"
-      I2P_DAEMON_PORT: "4447"
-      TOR_HIDDEN_SERVICE_DIR: /tor-data
-      I2P_P2P_KEY_FILE: /i2pd-data/monero-p2p.dat
+      MONERO_RPC_HIDDEN_SERVICE: "${APP_MONERO_RPC_HIDDEN_SERVICE}"
+      MONERO_P2P_HIDDEN_SERVICE: "${APP_MONERO_P2P_HIDDEN_SERVICE}"
       DEVICE_DOMAIN_NAME: "${DEVICE_DOMAIN_NAME}"
+      MONEROD_IP: "${APP_MONERO_NODE_IP}"
+      TOR_PROXY_IP: "${APP_MONERO_TOR_PROXY_IP}"
+      TOR_PROXY_PORT: "9050"
+      TOR_PROXY_CONTROL_PORT: "9051"
+      TOR_PROXY_CONTROL_PASSWORD: "moneyprintergobrrr"
+      I2P_DAEMON_IP: "${APP_MONERO_I2P_DAEMON_IP}"
+      I2P_DAEMON_PORT: "7656"
     networks:
       default:
-        ipv4_address: 10.21.22.178
+        ipv4_address: $APP_MONERO_IP
 
   monerod:
-    image: ghcr.io/sethforprivacy/simple-monerod:v0.18.5.4@sha256:e3daef3c78669a1421f06ee43fbeaf263b67794528aba7a70db1007a13721b33
     user: "1000:1000"
-    # The dashboard restarts the daemon after settings changes.
+    # "unless-stopped" ensures monerod restarts via UI-triggered daemon restarts, not just on failure
     restart: unless-stopped
     stop_grace_period: 15m
-    entrypoint: ["/bin/sh", "-c"]
-    command:
-      - 'until [ -s /home/monero/.bitmonero/bitmonero.conf ]; do sleep 1; done; exec /entrypoint.sh --config-file=/home/monero/.bitmonero/bitmonero.conf --rpc-bind-ip=0.0.0.0 --rpc-bind-port=18081 --rpc-login="$$MONERO_RPC_USER:$$MONERO_RPC_PASSWORD"'
-    environment:
-      MONERO_RPC_USER: "${APP_MONERO_RPC_USER}"
-      MONERO_RPC_PASSWORD: "${APP_MONERO_RPC_PASS}"
+    command: "${APP_MONERO_COMMAND}"
+    image: ghcr.io/sethforprivacy/simple-monerod:v0.18.5.4@sha256:e3daef3c78669a1421f06ee43fbeaf263b67794528aba7a70db1007a13721b33
     ports:
-      - "18080:18080"
-      - "18081:18081"
+      - "${APP_MONERO_P2P_PORT}:${APP_MONERO_P2P_PORT}"
+      - "${APP_MONERO_RPC_PORT}:${APP_MONERO_RPC_PORT}"
     volumes:
-      - ${APP_DATA_DIR}/data/monero:/home/monero/.bitmonero
+      - "${APP_MONERO_DATA_DIR}:/home/monero/.bitmonero"
     networks:
       default:
-        ipv4_address: 10.21.21.179
+        ipv4_address: $APP_MONERO_NODE_IP
 
   tor:
     image: ghcr.io/getumbrel/tor:0.4.9.11@sha256:e382b8629c0dfef6ceb396b062622d4e4e955b19d6f16b883fd2c0723ad5671a
     user: "1000:1000"
     restart: on-failure
-    entrypoint: ["/usr/local/bin/tor", "-f", "/etc/tor/torrc"]
     volumes:
       - ${APP_DATA_DIR}/torrc:/etc/tor/torrc:ro
-      - ${APP_DATA_DIR}/data/tor:/data
+      - ${TOR_DATA_DIR}:/data
+    environment:
+      HOME: "/tmp"
     networks:
       default:
-        ipv4_address: 10.21.21.180
+        ipv4_address: "${APP_MONERO_TOR_PROXY_IP}"
 
-  i2pd_daemon:
-    image: ghcr.io/purplei2p/i2pd:latest-release@sha256:f3ff7f0e501cc6baf383a5ca2a04659e0c9c8f8e9781e86aead2aa4decd27c9a
-    user: "1000:1000"
-    restart: on-failure
-    command: ["--conf=/etc/i2pd/i2pd.conf", "--tunconf=/etc/i2pd/tunnels.conf"]
-    volumes:
-      - ${APP_DATA_DIR}/i2pd.conf:/etc/i2pd/i2pd.conf:ro
-      - ${APP_DATA_DIR}/i2pd-tunnels.conf:/etc/i2pd/tunnels.conf:ro
-      - ${APP_DATA_DIR}/data/i2pd:/home/i2pd/data
-    networks:
-      default:
-        ipv4_address: 10.21.21.181
+  # i2pd_daemon:
+  #   image: purplei2p/i2pd:release-2.44.0@sha256:d154a599793c393cf9c91f8549ba7ece0bb40e5728e1813aa6dd4c210aa606f6
+  #   user: "root"
+  #   command: --sam.enabled=true --sam.address=0.0.0.0 --sam.port=7656 --loglevel=error
+  #   restart: on-failure
+  #   volumes:
+  #     - ${APP_DATA_DIR}/data/i2pd:/home/i2pd/data
+  #   networks:
+  #     default:
+  #       ipv4_address: "${APP_MONERO_I2P_DAEMON_IP}"
