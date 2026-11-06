@@ -3,12 +3,13 @@ export APP_MONERO_NODE_IP="10.21.21.179"
 export APP_MONERO_TOR_PROXY_IP="10.21.21.180"
 export APP_MONERO_I2P_DAEMON_IP="10.21.21.181"
 
-export APP_MONERO_DATA_DIR="${EXPORTS_APP_DIR}/data/monero"
+export APP_MONERO_DATA_DIR="${EXPORTS_APP_DATA_DIR}/monero"
 export APP_MONERO_RPC_PORT="18081"
 export APP_MONERO_RESTRICTED_RPC_PORT="18089"
 export APP_MONERO_P2P_PORT="18080"
-export APP_MONERO_ZMQ_PORT="18083"
-export APP_MONERO_TOR_PORT="9901"
+export APP_MONERO_ZMQ_PORT="18082"
+export APP_MONERO_ZMQ_PUB_PORT="18084"
+export APP_MONERO_TOR_PORT="18083"
 
 #temporarily set to mainnet
 MONERO_NETWORK="mainnet"
@@ -16,14 +17,14 @@ MONERO_CHAIN="mainnet"
 MONERO_ENV_FILE="${EXPORTS_APP_DIR}/.env"
 
 {
-	MONERO_APP_CONFIG_FILE="${EXPORTS_APP_DIR}/data/app/monero-config.json"
+	MONERO_APP_CONFIG_FILE="${EXPORTS_APP_DATA_DIR}/app/monero-config.json"
 	if [[ -f "${MONERO_APP_CONFIG_FILE}" ]]
 	then
 		monero_app_network=$(jq -r '.network' "${MONERO_APP_CONFIG_FILE}")
 		case $monero_app_network in
 			"mainnet")
 				MONERO_NETWORK="mainnet";;
-			"testnet")
+			"test"|"testnet")
 				MONERO_NETWORK="testnet";;
 			"stagenet")
 				MONERO_NETWORK="stagenet";;
@@ -33,24 +34,16 @@ MONERO_ENV_FILE="${EXPORTS_APP_DIR}/.env"
 
 
 
-if [[ ! -f "${MONERO_ENV_FILE}" ]]; then
-	if [[ -z "${MONERO_NETWORK}" ]]; then
-		MONERO_NETWORK="mainnet"
-	fi
-
-	if [[ -z ${MONERO_RPC_USER+x} ]] || [[ -z ${MONERO_RPC_PASS+x} ]] || [[ -z ${MONERO_RPC_AUTH+x} ]]; then
-		MONERO_RPC_USER="monero"
-		MONERO_RPC_PASS="$(derive_entropy "${app_entropy_identifier}-monero-rpc")"
-		MONERO_RPC_AUTH="${MONERO_RPC_USER}:${MONERO_RPC_PASS}"
-	fi
-
-	echo "export APP_MONERO_NETWORK='${MONERO_NETWORK}'"		>  "${MONERO_ENV_FILE}"
-	echo "export APP_MONERO_RPC_USER='${MONERO_RPC_USER}'"	>> "${MONERO_ENV_FILE}"
-	echo "export APP_MONERO_RPC_PASS='${MONERO_RPC_PASS}'"	>> "${MONERO_ENV_FILE}"
-	echo "export APP_MONERO_RPC_AUTH='${MONERO_RPC_AUTH}'"	>> "${MONERO_ENV_FILE}"
+# Retain previously issued native RPC credentials; derive stable values on fresh installs.
+if [[ -f "${MONERO_ENV_FILE}" ]]; then
+    . "${MONERO_ENV_FILE}"
+else
+    export APP_MONERO_NETWORK="${MONERO_NETWORK}"
+    export APP_MONERO_RPC_USER="monero"
+    export APP_MONERO_RPC_PASS="$(derive_entropy "${app_entropy_identifier}-monero-rpc")"
+    export APP_MONERO_RPC_AUTH="${APP_MONERO_RPC_USER}:${APP_MONERO_RPC_PASS}"
 fi
-
-. "${MONERO_ENV_FILE}"
+export APP_MONERO_RESTRICTED_RPC_PASS="$(derive_entropy "${app_entropy_identifier}-monero-restricted-rpc")"
 
 # Make sure we don't persist the original value in .env if we have a more recent
 # value from the app config
@@ -82,7 +75,6 @@ BIN_ARGS=()
 BIN_ARGS+=( "--rpc-bind-port=${APP_MONERO_RPC_PORT}" )
 BIN_ARGS+=( "--rpc-bind-ip=0.0.0.0" )
 BIN_ARGS+=( "--confirm-external-bind" )
-BIN_ARGS+=( "--zmq-pub=tcp://0.0.0.0:${APP_MONERO_ZMQ_PORT}" )
 
 BIN_ARGS+=( "--rpc-login=\"${APP_MONERO_RPC_AUTH}\"" )
 

@@ -1,0 +1,6 @@
+[monero-p2p]
+type = server
+host = $APP_MONERO_NODE_IP
+port = 18087
+inport = 0
+keys = monero-p2p.dat

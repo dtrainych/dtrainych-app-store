@@ -1,0 +1,20 @@
+log = stdout
+loglevel = info
+bandwidth = L
+ipv4 = true
+ipv6 = false
+[http]
+enabled = false
+address = 127.0.0.1
+port = 7070
+strictheaders = false
+[socksproxy]
+enabled = true
+address = 0.0.0.0
+port = 4447
+[httpproxy]
+enabled = false
+[sam]
+enabled = false
+[upnp]
+enabled = false

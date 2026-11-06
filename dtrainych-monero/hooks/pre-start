@@ -1,31 +1,25 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
-# Ensure bind mounts exist on upgrades as well as fresh installs.
-DATA_DIR="${APP_DATA_ROOT:-${APP_DATA_DIR}/data}"
+APP_DIR="${APP_DATA_DIR:-$(readlink -f "$(dirname "${BASH_SOURCE[0]}")/..")}"
+DATA_DIR="${APP_DATA_ROOT:-${APP_DIR}/data}"
+
+# Keep existing data in place and create missing mounts on upgrades.
 mkdir -p "${DATA_DIR}/app" "${DATA_DIR}/monero" "${DATA_DIR}/i2pd"
 chown 1000:1000 "${DATA_DIR}/app" "${DATA_DIR}/monero" "${DATA_DIR}/i2pd"
 
-# Delay booting Monero until the RPC and P2P Tor Hidden Services are ready
-
-HIDDEN_SERVICE_FILE="${TOR_DATA_DIR}/app-${APP_ID}-rpc/hostname"
-
-if [[ -f "${HIDDEN_SERVICE_FILE}" ]]; then
-	exit
-fi
-
-"${UMBREL_ROOT}/scripts/app" compose "${APP_ID}" up --detach monerod
-"${UMBREL_ROOT}/scripts/app" compose "${APP_ID}" up --detach tor
-
-echo "App: ${APP_ID} - Generating Tor Hidden Service..."
-
-for attempt in $(seq 1 100); do
-	if [[ -f "${HIDDEN_SERVICE_FILE}" ]]; then
-		echo "App: ${APP_ID} - Hidden service file created successfully!"
-		break
-	fi
-	sleep 0.1
+# The dashboard reads these identities while Tor generates them on first boot.
+for kind in p2p rpc; do
+    service_dir="${TOR_DATA_DIR}/app-${APP_ID}-${kind}"
+    mkdir -p "${service_dir}"
+    chown 1000:1000 "${service_dir}"
+    chmod 700 "${service_dir}"
 done
 
-if [[ ! -f "${HIDDEN_SERVICE_FILE}" ]]; then
-	echo "App: ${APP_ID} - Hidden service file wasn't created"
+# Rebuild only the old dashboard-generated configuration from saved settings.
+# Preserve a backup and leave hand-written configuration untouched.
+config="${DATA_DIR}/monero/bitmonero.conf"
+backup="${config}.pre-v1.1.2"
+if [[ -f "${config}" && ! -e "${backup}" ]] && head -n 1 "${config}" | grep -qx '# \[chain\]'; then
+    mv "${config}" "${backup}"
 fi

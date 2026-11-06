@@ -4,7 +4,7 @@ storage:
   dataRoot: data
 category: crypto
 name: Monero Node
-version: "0.18.5.4-patch.1"
+version: "1.1.2"
 tagline: Run a monero node
 description: >-
   Run your monero node and independently store and validate every single Monero transaction with it.
@@ -13,8 +13,8 @@ description: >-
 developer: deverickapollo
 website: https://www.getmonero.org/
 dependencies: []
-repo: https://github.com/deverickapollo/umbrel-monero
-support: https://github.com/deverickapollo/umbrel-monero/issues
+repo: https://github.com/voltagebushels82/umbrel-monero
+support: https://github.com/voltagebushels82/umbrel-monero/issues
 port: 9976
 submitter: dtrainych
 submission: https://github.com/dtrainych/dtrainych-app-store
@@ -22,10 +22,15 @@ gallery: []
 path: ""
 defaultPassword: ""
 releaseNotes: >-
-  This is the v0.18.5.4 release of the Monero software. This is a minor release that includes bug fixes.
+  Updates the Monero dashboard to v1.1.2 with a refreshed interface, improved mining and network settings,
+  Tor-only routing, working I2P support, and fixes for legacy testnet and incoming-connection settings.
+  Monero daemon remains on v0.18.5.4. Existing blockchain data, settings, RPC credentials, and Tor identities are retained.
+  Legacy dashboard-generated daemon configuration is backed up as bitmonero.conf.pre-v1.1.2 and rebuilt from saved settings.
 
-  Some highlights of this minor release are:
-    - Daemon: fix DNSSEC validation for checkpoints, blocklists and update checks
-    - RPC: restore string-to-integer conversion in JSON requests (to be removed in v0.19 as a breaking change)
 
-  Full release notes can be found at https://www.getmonero.org/2026/10/16/monero-0.18.5.4-released.html
+  Restricted wallet RPC is available on port 18090 with a separate password shown in the dashboard's Connect dialog.
+  ZMQ RPC uses port 18082 and ZMQ publish uses port 18084 when enabled in Advanced Settings.
+  Incoming Tor peers use port 18083. Enable Incoming Connections to accept Tor and I2P peers.
+
+
+  Dashboard source: https://github.com/voltagebushels82/umbrel-monero/releases/tag/v1.1.2
