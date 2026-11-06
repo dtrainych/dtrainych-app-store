@@ -2,6 +2,6 @@
 set -euo pipefail
 APP_DIR="${APP_DATA_DIR:-$(readlink -f "$(dirname "${BASH_SOURCE[0]}")/..")}"
 DATA_DIR="${APP_DATA_ROOT:-${APP_DIR}/data}"
-mkdir -p "${DATA_DIR}"/{app,monero,tor,i2pd}
-chown 1000:1000 "${DATA_DIR}"/{app,monero,tor,i2pd}
+mkdir -p "${DATA_DIR}"/{app/logs,monero,tor,i2pd}
+chown 1000:1000 "${DATA_DIR}"/{app,app/logs,monero,tor,i2pd}
 chmod 700 "${DATA_DIR}/tor"

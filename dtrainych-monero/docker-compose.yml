@@ -11,6 +11,7 @@ services:
     depends_on: [tor, i2pd_daemon]
     volumes:
       - ${APP_DATA_DIR}/data/app:/data
+      - ${APP_DATA_DIR}/data/app/logs:/app/logs
       - ${APP_DATA_DIR}/data/monero:/monero/.monero
       - ${APP_DATA_DIR}/data/tor:/tor-data:ro
       - ${APP_DATA_DIR}/data/i2pd:/i2pd-data:ro
