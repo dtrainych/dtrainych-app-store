@@ -1,0 +1,27 @@
+manifestVersion: 1.1
+id: dtrainych-monero
+storage:
+  dataRoot: data
+category: crypto
+name: Monero Node
+version: "1.1.2"
+tagline: Run your own Monero node
+description: >-
+  Run a Monero node and independently verify the blockchain. Initial sync requires substantial storage and time. Manage your node and configure Tor and I2P from the dashboard.
+releaseNotes: >-
+  Updates the Monero dashboard to v1.1.2 with Tor and I2P connectivity,
+  improved network settings, mining details, and wallet connection options.
+
+  Source: https://github.com/voltagebushels82/umbrel-monero/tree/v1.1.2
+developer: deverickapollo
+website: https://www.getmonero.org/
+dependencies: []
+repo: https://github.com/voltagebushels82/umbrel-monero
+support: https://github.com/voltagebushels82/umbrel-monero/issues
+port: 9976
+gallery: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""
+submitter: dtrainych
+submission: https://github.com/dtrainych/dtrainych-app-store

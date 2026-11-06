@@ -1,0 +1,7 @@
+DataDirectory /data
+SocksPort 0.0.0.0:9050
+Log notice stdout
+HiddenServiceDir /data/app-monero-p2p
+HiddenServicePort 18083 10.21.21.179:18083
+HiddenServiceDir /data/app-monero-rpc
+HiddenServicePort 18081 10.21.21.179:18081
