@@ -9,7 +9,7 @@ environment:
     note: Optional profile ID for MCP. Leave empty for a single profile; required when multiple profiles exist.
 category: files
 name: openGym
-version: "1.4.4"
+version: "1.4.5"
 tagline: Plan workouts and track your progress
 description: >-
   Open openGym using your Umbrel hostname over HTTPS to create a profile with a
@@ -30,15 +30,15 @@ description: >-
   and does not replace your openGym profile password. HTTP is unencrypted; use
   this endpoint on your trusted local network and do not forward its port.
 releaseNotes: >-
-  Updates openGym to 1.4.4 with a refreshed interface, optional modules,
-  set comparisons with your previous workout, exercise merging, set notes,
-  weekly muscle targets, and more workout import formats. Includes fixes for
-  rest timers and security hardening for self-hosted servers.
-  Updates the read-only MCP tools to the same release, adding programme
-  details and support for merged exercises and set notes.
+  Updates openGym to 1.4.5 with timed circuits, AMRAP, EMOM and Tabata workouts,
+  improved routine imports, resistance-band tracking, and progress photo
+  comparisons. Fixes account-switching issues affecting workout and media sync.
+  The admin dashboard now shows training counts instead of individual workouts
+  and weigh-ins. Updates the read-only MCP tools to the same release, adding
+  exercise search and improved training calculations.
 
 
-  Full release notes: https://github.com/DuarteSantos8/openGym/releases/tag/v1.4.4
+  Full release notes: https://github.com/DuarteSantos8/openGym/releases/tag/v1.4.5
 developer: Duarte Santos
 website: https://opengym.ch/
 dependencies: []

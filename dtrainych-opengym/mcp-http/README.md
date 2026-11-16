@@ -2,14 +2,14 @@
 
 This package adds a read-only Streamable HTTP MCP service alongside the existing
 Umbrel app. It uses the unmodified read tools and training calculations from
-[openGym v1.4.4](https://github.com/DuarteSantos8/openGym/tree/v1.4.4/mcp).
-The HTTP adapter registers only upstream `TOOLS`, including `get_programme`;
-upstream `WRITE_TOOLS` and workout-writing credentials are not exposed.
+[openGym v1.4.5](https://github.com/DuarteSantos8/openGym/tree/v1.4.5/mcp).
+The HTTP adapter registers only upstream `TOOLS`, including `get_programme` and
+`search_exercises`; upstream write tools and workout-writing credentials are not exposed.
 
 ## Activate after pushing
 
 1. Push the package changes to your community App Store repository.
-2. Refresh the store in Umbrel and update **openGym** to `1.4.4`.
+2. Refresh the store in Umbrel and update **openGym** to `1.4.5`.
 3. Copy the password from openGym's **Umbrel app credentials**. The username label
    is **MCP bearer token**. This credential belongs to MCP; your existing profile
    password and passkeys continue to work as before.
@@ -68,14 +68,15 @@ selection; only the upstream training-tool results cross the MCP interface.
 ## Deployment details
 
 The runtime is a public Node 22.23.4 image pinned to its multi-architecture index
-(supporting amd64 and arm64). The bootstrap downloads the exact OpenGym v1.4.2
-commit, verifies its archive SHA-256, extracts the MCP and shared calculation
-sources, and installs dependencies with the upstream lockfile using
+(supporting amd64 and arm64). The bootstrap downloads the exact OpenGym v1.4.5
+commit `2d70e026effc6602f513555166a97443520f0572`, verifies its archive SHA-256,
+extracts the MCP and shared calculation sources (including the API's pure streak
+module and ESM package metadata), and installs dependencies with the upstream lockfile using
 `npm ci --omit=dev --ignore-scripts`.
 
 GitHub and npm access are needed whenever Umbrel recreates the sidecar, including
 app lifecycle operations that recreate containers. The upstream archive is about
-196 MB; unused media is not extracted and the archive is deleted after extraction.
+228 MB; unused media is not extracted and the archive is deleted after extraction.
 A normal process restart in the same container reuses the installed code.
 A download failure affects MCP; the existing web and API services remain separate.
 This bootstrap is a practical custom-store deployment; a prebuilt MCP image would
@@ -95,22 +96,22 @@ No generated token or user data is stored in this repository.
 
 ## Verification
 
-Checks for the 1.4.2-patch.3 → 1.4.4 package update completed using Node
+Checks for the 1.4.4 → 1.4.5 package update completed using Node
 22.23.4 on Linux arm64:
 
-- 133 upstream MCP tests passed; five API-backed write integration tests were
-  skipped because the separate upstream API test dependencies were not installed.
+- All 153 upstream MCP tests passed, including API-backed HTTP, OAuth and workout
+  integration tests against temporary synthetic data.
 - The complete MCP import graph loads under plain Node.
 - Exact embedded compose startup and cached restart passed using a clean
   temporary runtime and synthetic data (`test-startup.py`).
-- SDK client integration passed initialization, discovery of ten read-only
+- SDK client integration passed initialization, discovery of eleven read-only
   tools, and `list_routines` against synthetic profile data.
 - Missing and incorrect bearer tokens, untrusted Host headers, and browser
   Origin requests were rejected.
 - Rendering is deterministic and both embedded scripts match their source files.
 - Public API/web image indexes support linux/amd64 and linux/arm64; both
-  architectures' image labels identify version 1.4.4 and source commit
-  `5f5832db56080837b58342ff50f78631dcc63e07`.
+  architectures' image labels identify version 1.4.5 and source commit
+  `2d70e026effc6602f513555166a97443520f0572`.
 - `npm run lint:apps -- dtrainych-opengym --check-images` passed with zero errors
   and two warnings: the unchanged pinned Node image's tag has been rebuilt, and
   the MCP sidecar deliberately uses `no-new-privileges:true`. The existing Node
@@ -119,9 +120,12 @@ Checks for the 1.4.2-patch.3 → 1.4.4 package update completed using Node
 
 Live Umbrel update, browser login, restart, and real-data persistence verification
 were not performed for this release. These local checks do not establish the
-Umbrel update path. The API still runs as root with `/data` persistence; upstream's
-web image now runs as UID 101 and retains port 80 as its Docker default. No
-package mount, authentication, permission, or environment change was required.
+Umbrel update path. The API still runs as root with `/data` persistence; the web
+image still runs as UID 101 and retains port 80 as its Docker default. No package
+mount, authentication, permission, or environment change was required. Upstream's
+new optional server features, including its separate API-backed MCP transport,
+remain disabled by default. The existing bearer-authenticated, read-only MCP
+sidecar remains on port 3487.
 
 Install the repository's locked lint dependency with `npm ci --ignore-scripts`
 before repeating the linter.

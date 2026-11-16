@@ -7,7 +7,7 @@ import { mkdir, access, writeFile, unlink } from 'node:fs/promises';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import { execFileSync } from 'node:child_process';
-const commit = '5f5832db56080837b58342ff50f78631dcc63e07';
+const commit = '2d70e026effc6602f513555166a97443520f0572';
 const root = process.env.MCP_RUNTIME_DIR || '/tmp/opengym';
 await mkdir(root, { recursive: true });
 process.chdir(root);
@@ -18,8 +18,9 @@ catch {
   await pipeline(Readable.fromWeb(response.body), createWriteStream('source.tar.gz'));
   const hash = createHash('sha256');
   for await (const chunk of createReadStream('source.tar.gz')) hash.update(chunk);
-  if (hash.digest('hex') !== '81b9c7f3750843073c32f7874a6614b68903adb49f3c4ad585f90e0e55330491') throw new Error('Source checksum mismatch');
-  execFileSync('tar', ['-xzf', 'source.tar.gz', '--strip-components=1', ...['mcp', 'frontend/src/lib', 'frontend/package.json', 'LICENSE'].map(p => `openGym-${commit}/${p}`)], { stdio: 'inherit' });
+  if (hash.digest('hex') !== 'e8f3c76e180424d7ba9d1db23eba85337f086c4dde7009829ee2f995f5de6990') throw new Error('Source checksum mismatch');
+  // Shared frontend calculations import the API's pure streak module in 1.4.5.
+  execFileSync('tar', ['-xzf', 'source.tar.gz', '--strip-components=1', ...['mcp', 'frontend/src/lib', 'frontend/package.json', 'api/coach/core/streak.js', 'api/package.json', 'LICENSE'].map(p => `openGym-${commit}/${p}`)], { stdio: 'inherit' });
   await unlink('source.tar.gz');
   execFileSync('npm', ['ci', '--omit=dev', '--ignore-scripts', '--no-audit', '--no-fund'], { cwd: `${root}/mcp`, stdio: 'inherit' });
   await writeFile('.mcp-ready', commit);
